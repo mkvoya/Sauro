@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>cc.sauro.app</string>
+    <key>CFBundleName</key>
+    <string>Sauro</string>
+    <key>CFBundleDisplayName</key>
+    <string>Sauro</string>
+    <key>CFBundleExecutable</key>
+    <string>Sauro</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Sauro needs access to your calendar to add detected events.</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>Sauro needs screen capture access to detect calendar events from on-screen content.</string>
+</dict>
+</plist>
