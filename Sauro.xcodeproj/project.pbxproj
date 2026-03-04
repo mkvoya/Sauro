@@ -1,0 +1,374 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03ECBEF7FF210261C774B0EA /* SauroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CF47965B2867FAAFCC9632 /* SauroApp.swift */; };
+		0C1AB5323BCB31E61405C913 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD98648B152A7ACA67F3F46E /* LLMService.swift */; };
+		3A0BCF86D94B9E4D7904DFCE /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91EC7C6B1B67BDEF9A8DF430 /* OCRService.swift */; };
+		401CFBECA826F7919C427082 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F2E2F426656643A2DDEA3A /* AppCoordinator.swift */; };
+		41B3B72FD81F22B758ED08AE /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A4446E9428E52A649ECD7D /* AppLog.swift */; };
+		4C58119BBF86C83086A4E64A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A64C5A3BC4FFA1F51216B7 /* NotificationService.swift */; };
+		5B0FFFA6E07DB0362E978793 /* DetectedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA678D5B053D36DC41A04300 /* DetectedEvent.swift */; };
+		693DF8DFD2ABF1ABD397A46E /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9BC4A6781E2F6C497EE59E3 /* CalendarService.swift */; };
+		72CE1E5982DAEE18BC5E0130 /* PermissionPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4949EBB3CCB508D9B2955B13 /* PermissionPrompt.swift */; };
+		A4C0B9CC6FFE5A2D39F6678A /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0DC2637743009F6BDC056D /* AppSettings.swift */; };
+		D5C06657E021940A1BEE84F6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A317B72B28AEC134870B0AC9 /* ContentView.swift */; };
+		EE63BC7DEED09561FEE3B6D0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA1476BD60EB36D731BA5C5 /* AppDelegate.swift */; };
+		FA409867DBA4441CCDE6203F /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3DB893B78018D4A5A0AC05 /* ScreenCaptureService.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		27A4446E9428E52A649ECD7D /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
+		3A3DB893B78018D4A5A0AC05 /* ScreenCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureService.swift; sourceTree = "<group>"; };
+		4949EBB3CCB508D9B2955B13 /* PermissionPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionPrompt.swift; sourceTree = "<group>"; };
+		5BDDD08D1F0F4D3E1A44B81E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		63CF47965B2867FAAFCC9632 /* SauroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SauroApp.swift; sourceTree = "<group>"; };
+		65A64C5A3BC4FFA1F51216B7 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		8EA1476BD60EB36D731BA5C5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		91EC7C6B1B67BDEF9A8DF430 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
+		A29BA25255E743CAB514E011 /* Sauro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sauro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A317B72B28AEC134870B0AC9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AB0DC2637743009F6BDC056D /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		C6F2E2F426656643A2DDEA3A /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		CA678D5B053D36DC41A04300 /* DetectedEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectedEvent.swift; sourceTree = "<group>"; };
+		CD98648B152A7ACA67F3F46E /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
+		E9BC4A6781E2F6C497EE59E3 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		478BDFAFAD18B59E1B5B9718 /* SauroApp */ = {
+			isa = PBXGroup;
+			children = (
+				C6F2E2F426656643A2DDEA3A /* AppCoordinator.swift */,
+				8EA1476BD60EB36D731BA5C5 /* AppDelegate.swift */,
+				A317B72B28AEC134870B0AC9 /* ContentView.swift */,
+				5BDDD08D1F0F4D3E1A44B81E /* Info.plist */,
+				63CF47965B2867FAAFCC9632 /* SauroApp.swift */,
+				7766615E25350DE334E75F53 /* Models */,
+				C306BEE54CF8BE46E0AB8CAA /* Services */,
+			);
+			path = SauroApp;
+			sourceTree = "<group>";
+		};
+		7766615E25350DE334E75F53 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				27A4446E9428E52A649ECD7D /* AppLog.swift */,
+				AB0DC2637743009F6BDC056D /* AppSettings.swift */,
+				CA678D5B053D36DC41A04300 /* DetectedEvent.swift */,
+				4949EBB3CCB508D9B2955B13 /* PermissionPrompt.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		86F624B920B86EF87E0CFC11 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				478BDFAFAD18B59E1B5B9718 /* SauroApp */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		C306BEE54CF8BE46E0AB8CAA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				E9BC4A6781E2F6C497EE59E3 /* CalendarService.swift */,
+				CD98648B152A7ACA67F3F46E /* LLMService.swift */,
+				65A64C5A3BC4FFA1F51216B7 /* NotificationService.swift */,
+				91EC7C6B1B67BDEF9A8DF430 /* OCRService.swift */,
+				3A3DB893B78018D4A5A0AC05 /* ScreenCaptureService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F66CEA1C16EC826FF3D8C8C7 = {
+			isa = PBXGroup;
+			children = (
+				86F624B920B86EF87E0CFC11 /* Sources */,
+				F992D5EB44E639BA7B4455E2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F992D5EB44E639BA7B4455E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A29BA25255E743CAB514E011 /* Sauro.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A45031D5F156F0EEAF4393F0 /* Sauro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D1FCE6AF54871E70A071AD5D /* Build configuration list for PBXNativeTarget "Sauro" */;
+			buildPhases = (
+				9B91A3BA5108F2006C661854 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sauro;
+			packageProductDependencies = (
+			);
+			productName = Sauro;
+			productReference = A29BA25255E743CAB514E011 /* Sauro.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6C65F7FB7E6BED801DD35AD7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 993FE14F6A39E822A395FA37 /* Build configuration list for PBXProject "Sauro" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = F66CEA1C16EC826FF3D8C8C7;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A45031D5F156F0EEAF4393F0 /* Sauro */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9B91A3BA5108F2006C661854 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				401CFBECA826F7919C427082 /* AppCoordinator.swift in Sources */,
+				EE63BC7DEED09561FEE3B6D0 /* AppDelegate.swift in Sources */,
+				41B3B72FD81F22B758ED08AE /* AppLog.swift in Sources */,
+				A4C0B9CC6FFE5A2D39F6678A /* AppSettings.swift in Sources */,
+				693DF8DFD2ABF1ABD397A46E /* CalendarService.swift in Sources */,
+				D5C06657E021940A1BEE84F6 /* ContentView.swift in Sources */,
+				5B0FFFA6E07DB0362E978793 /* DetectedEvent.swift in Sources */,
+				0C1AB5323BCB31E61405C913 /* LLMService.swift in Sources */,
+				4C58119BBF86C83086A4E64A /* NotificationService.swift in Sources */,
+				3A0BCF86D94B9E4D7904DFCE /* OCRService.swift in Sources */,
+				72CE1E5982DAEE18BC5E0130 /* PermissionPrompt.swift in Sources */,
+				03ECBEF7FF210261C774B0EA /* SauroApp.swift in Sources */,
+				FA409867DBA4441CCDE6203F /* ScreenCaptureService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		067E07E31377FC37FEB03C0F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		1BE67136B8BC63DBA87FFD69 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		66EBC604F1E10889171BBB3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Sources/SauroApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Sauro;
+				INFOPLIST_KEY_CFBundleName = Sauro;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "Sauro needs full Calendar access to create and remove detected schedule events.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Sauro needs Calendar access to add detected schedule events.";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Sauro needs write-only Calendar access to add detected schedule events.";
+				INFOPLIST_KEY_NSScreenCaptureDescription = "Sauro needs Screen Recording access to OCR text and detect schedule events.";
+				INFOPLIST_KEY_NSUserNotificationsUsageDescription = "Sauro needs Notifications access to show added-event alerts and undo actions.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sauro.app;
+				PRODUCT_NAME = Sauro;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9BAF7B65B630C799D288AEF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Sources/SauroApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Sauro;
+				INFOPLIST_KEY_CFBundleName = Sauro;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "Sauro needs full Calendar access to create and remove detected schedule events.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Sauro needs Calendar access to add detected schedule events.";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Sauro needs write-only Calendar access to add detected schedule events.";
+				INFOPLIST_KEY_NSScreenCaptureDescription = "Sauro needs Screen Recording access to OCR text and detect schedule events.";
+				INFOPLIST_KEY_NSUserNotificationsUsageDescription = "Sauro needs Notifications access to show added-event alerts and undo actions.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sauro.app;
+				PRODUCT_NAME = Sauro;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		993FE14F6A39E822A395FA37 /* Build configuration list for PBXProject "Sauro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				067E07E31377FC37FEB03C0F /* Debug */,
+				1BE67136B8BC63DBA87FFD69 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D1FCE6AF54871E70A071AD5D /* Build configuration list for PBXNativeTarget "Sauro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBC604F1E10889171BBB3B /* Debug */,
+				9BAF7B65B630C799D288AEF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6C65F7FB7E6BED801DD35AD7 /* Project object */;
+}

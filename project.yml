@@ -1,0 +1,52 @@
+name: Sauro
+options:
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: 5.9
+    MACOSX_DEPLOYMENT_TARGET: 13.0
+configs:
+  Debug: debug
+  Release: release
+targets:
+  Sauro:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: Sources/SauroApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sauro.app
+        PRODUCT_NAME: Sauro
+        INFOPLIST_KEY_CFBundleDisplayName: Sauro
+        INFOPLIST_KEY_CFBundleName: Sauro
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        INFOPLIST_KEY_NSCalendarsUsageDescription: Sauro needs Calendar access to add detected schedule events.
+        INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription: Sauro needs full Calendar access to create and remove detected schedule events.
+        INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription: Sauro needs write-only Calendar access to add detected schedule events.
+        INFOPLIST_KEY_NSScreenCaptureDescription: Sauro needs Screen Recording access to OCR text and detect schedule events.
+        INFOPLIST_KEY_NSUserNotificationsUsageDescription: Sauro needs Notifications access to show added-event alerts and undo actions.
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 1.0
+    info:
+      path: Sources/SauroApp/Info.plist
+      properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSMinimumSystemVersion: "13.0"
+        NSSupportsAutomaticGraphicsSwitching: true
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+        NSCalendarsUsageDescription: Sauro needs Calendar access to add detected schedule events.
+        NSCalendarsFullAccessUsageDescription: Sauro needs full Calendar access to create and remove detected schedule events.
+        NSCalendarsWriteOnlyAccessUsageDescription: Sauro needs write-only Calendar access to add detected schedule events.
+        NSScreenCaptureDescription: Sauro needs Screen Recording access to OCR text and detect schedule events.
+        NSUserNotificationsUsageDescription: Sauro needs Notifications access to show added-event alerts and undo actions.
+schemes:
+  Sauro:
+    build:
+      targets:
+        Sauro: all
+    run:
+      config: Debug
