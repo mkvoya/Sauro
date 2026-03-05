@@ -18,6 +18,9 @@ final class AppSettings: @unchecked Sendable {
     private static let openAIAPIKeyKey = "openAIAPIKey"
     private static let openAIModelKey = "openAIModel"
     private static let verboseLoggingKey = "verboseLogging"
+    private static let selectedDisplayIDKey = "selectedDisplayID"
+    private static let dailyAPICallLimitKey = "dailyAPICallLimit"
+    private static let pauseWhenIdleKey = "pauseWhenIdle"
 
     var ollamaModel: String {
         didSet { UserDefaults.standard.set(ollamaModel, forKey: Self.ollamaModelKey) }
@@ -59,6 +62,18 @@ final class AppSettings: @unchecked Sendable {
         didSet { UserDefaults.standard.set(verboseLogging, forKey: Self.verboseLoggingKey) }
     }
 
+    var selectedDisplayID: UInt32 {
+        didSet { UserDefaults.standard.set(Int(selectedDisplayID), forKey: Self.selectedDisplayIDKey) }
+    }
+
+    var dailyAPICallLimit: Int {
+        didSet { UserDefaults.standard.set(dailyAPICallLimit, forKey: Self.dailyAPICallLimitKey) }
+    }
+
+    var pauseWhenIdle: Bool {
+        didSet { UserDefaults.standard.set(pauseWhenIdle, forKey: Self.pauseWhenIdleKey) }
+    }
+
     init() {
         let defaults = UserDefaults.standard
         self.ollamaModel = defaults.string(forKey: Self.ollamaModelKey) ?? "llama3.2"
@@ -71,11 +86,21 @@ final class AppSettings: @unchecked Sendable {
         self.openAIAPIKey = defaults.string(forKey: Self.openAIAPIKeyKey) ?? ""
         self.openAIModel = defaults.string(forKey: Self.openAIModelKey) ?? "gpt-4o-mini"
         self.verboseLogging = defaults.bool(forKey: Self.verboseLoggingKey)
+        let storedDisplay = defaults.integer(forKey: Self.selectedDisplayIDKey)
+        self.selectedDisplayID = storedDisplay > 0 ? UInt32(storedDisplay) : 0
+        self.dailyAPICallLimit = defaults.integer(forKey: Self.dailyAPICallLimitKey).nonZeroInt ?? 200
+        self.pauseWhenIdle = defaults.object(forKey: Self.pauseWhenIdleKey) as? Bool ?? true
     }
 }
 
 private extension Double {
     var nonZero: Double? {
+        self == 0 ? nil : self
+    }
+}
+
+private extension Int {
+    var nonZeroInt: Int? {
         self == 0 ? nil : self
     }
 }

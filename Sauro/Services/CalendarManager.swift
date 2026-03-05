@@ -38,10 +38,13 @@ actor CalendarManager {
         let ekEvent = EKEvent(eventStore: eventStore)
         ekEvent.title = detectedEvent.title
         ekEvent.startDate = detectedEvent.startDate
-        ekEvent.endDate = detectedEvent.endDate ?? detectedEvent.startDate.addingTimeInterval(3600)
+        ekEvent.isAllDay = detectedEvent.isAllDay
+
+        let proposedEnd = detectedEvent.endDate ?? detectedEvent.startDate.addingTimeInterval(3600)
+        ekEvent.endDate = proposedEnd >= detectedEvent.startDate ? proposedEnd : detectedEvent.startDate.addingTimeInterval(3600)
+
         ekEvent.location = detectedEvent.location
         ekEvent.notes = detectedEvent.notes
-        ekEvent.isAllDay = detectedEvent.isAllDay
 
         if let calendarTitle {
             let calendars = eventStore.calendars(for: .event)

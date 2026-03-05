@@ -17,6 +17,9 @@ struct SauroApp: App {
             MenuBarPopover()
                 .environment(coordinator)
                 .environment(settings)
+                .task {
+                    appDelegate.setCoordinator(coordinator)
+                }
         }
         .menuBarExtraStyle(.window)
     }

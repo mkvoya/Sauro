@@ -15,6 +15,25 @@ struct DetectedEvent: Codable, Identifiable, Hashable, Sendable {
         return "\(title.lowercased())|\(dateString)"
     }
 
+    func sanitized() -> DetectedEvent {
+        var copy = self
+        if copy.title.count > 200 {
+            copy.title = String(copy.title.prefix(200))
+        }
+        if let notes = copy.notes, notes.count > 2000 {
+            copy.notes = String(notes.prefix(2000))
+        }
+        if copy.isAllDay {
+            copy.startDate = Calendar.current.startOfDay(for: copy.startDate)
+            copy.endDate = copy.endDate.map { Calendar.current.startOfDay(for: $0).addingTimeInterval(86400) }
+                ?? copy.startDate.addingTimeInterval(86400)
+        }
+        if let endDate = copy.endDate, endDate < copy.startDate {
+            copy.endDate = nil
+        }
+        return copy
+    }
+
     init(
         id: UUID = UUID(),
         title: String,

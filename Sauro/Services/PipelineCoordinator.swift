@@ -1,5 +1,6 @@
 import Foundation
 import os
+import ApplicationServices
 
 @MainActor
 @Observable
@@ -15,13 +16,39 @@ final class PipelineCoordinator {
     let settings: AppSettings
 
     var isRunning = false
-    var recentDetections: [DetectionRecord] = []
+    var recentDetections: [DetectionRecord] = [] {
+        didSet { saveRecentDetections() }
+    }
     var lastError: String?
 
     private var pipelineTask: Task<Void, Never>?
+    private var consecutiveFailures = 0
+    private let maxBackoffSeconds: Double = 300
+    private var dailyAPICallCount = 0
+    private var dailyAPICallDate: Date?
+    private static let detectionsFileURL: URL = {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let dir = appSupport.appendingPathComponent("Sauro", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.appendingPathComponent("recent_detections.json")
+    }()
 
     init(settings: AppSettings) {
         self.settings = settings
+        self.recentDetections = Self.loadRecentDetections()
+    }
+
+    private static func loadRecentDetections() -> [DetectionRecord] {
+        guard let data = try? Data(contentsOf: detectionsFileURL),
+              let records = try? JSONDecoder().decode([DetectionRecord].self, from: data) else {
+            return []
+        }
+        return records
+    }
+
+    private func saveRecentDetections() {
+        guard let data = try? JSONEncoder().encode(recentDetections) else { return }
+        try? data.write(to: Self.detectionsFileURL, options: .atomic)
     }
 
     func start() {
@@ -43,7 +70,14 @@ final class PipelineCoordinator {
                 if self.settings.isEnabled {
                     await self.runOnce()
                 }
-                try? await Task.sleep(for: .seconds(self.settings.captureInterval))
+                let backoff = self.consecutiveFailures > 0
+                    ? min(self.maxBackoffSeconds, Double(1 << min(self.consecutiveFailures, 8)))
+                    : 0
+                let sleepInterval = self.settings.captureInterval + backoff
+                if backoff > 0 {
+                    self.pipelineLog("Backing off for \(Int(backoff))s after \(self.consecutiveFailures) failures", level: .debug)
+                }
+                try? await Task.sleep(for: .seconds(sleepInterval))
             }
         }
     }
@@ -74,6 +108,17 @@ final class PipelineCoordinator {
         await undoRecord(withID: uuid)
     }
 
+    func dismissRecord(withID recordID: UUID) async {
+        guard let index = recentDetections.firstIndex(where: { $0.id == recordID }) else { return }
+        let record = recentDetections[index]
+        if let eventID = record.calendarEventIdentifier {
+            try? await calendarManager.deleteEvent(withIdentifier: eventID)
+        }
+        recentDetections[index].status = .dismissed
+        await deduplicator.markSeen(record.event)
+        pipelineLog("Dismissed event: \(record.event.title)", level: .info)
+    }
+
     private func makeLLMProvider() -> any LLMProvider {
         switch settings.llmProvider {
         case .ollama:
@@ -84,8 +129,32 @@ final class PipelineCoordinator {
         }
     }
 
+    private func isScreenLocked() -> Bool {
+        guard let dict = CGSessionCopyCurrentDictionary() as? [String: Any] else { return false }
+        return dict["CGSSessionScreenIsLocked"] as? Bool ?? false
+    }
+
+    private func checkAndResetDailyCounter() {
+        let today = Calendar.current.startOfDay(for: Date())
+        if let lastDate = dailyAPICallDate, Calendar.current.isDate(lastDate, inSameDayAs: today) {
+            return
+        }
+        dailyAPICallCount = 0
+        dailyAPICallDate = today
+    }
+
     private func runOnce() async {
+        if settings.pauseWhenIdle && isScreenLocked() {
+            pipelineLog("Screen locked, skipping cycle", level: .debug)
+            return
+        }
+
         do {
+            let displayID = settings.selectedDisplayID
+            if displayID > 0 {
+                await screenCapture.setDisplayID(displayID)
+            }
+
             pipelineLog("Capturing screen...", level: .debug)
             let image = try await screenCapture.captureScreen()
 
@@ -97,6 +166,12 @@ final class PipelineCoordinator {
                 return
             }
 
+            let isStable = await ocrDeduplicator.isStable(ocrText)
+            guard isStable else {
+                pipelineLog("Screen still changing, waiting for stability...", level: .debug)
+                return
+            }
+
             let isDuplicateOCR = await ocrDeduplicator.isDuplicate(ocrText)
             await ocrDeduplicator.markSeen(ocrText)
             guard !isDuplicateOCR else {
@@ -104,15 +179,25 @@ final class PipelineCoordinator {
                 return
             }
 
+            checkAndResetDailyCounter()
+            guard dailyAPICallCount < settings.dailyAPICallLimit else {
+                pipelineLog("Daily API call limit reached (\(settings.dailyAPICallLimit))", level: .info)
+                return
+            }
+
+            let maxOCRLength = 4000
+            let truncatedOCR = ocrText.count > maxOCRLength ? String(ocrText.prefix(maxOCRLength)) : ocrText
+
             let provider = makeLLMProvider()
-            pipelineLog("Sending to LLM (\(ocrText.count) chars)...", level: .debug)
+            dailyAPICallCount += 1
+            pipelineLog("Sending to LLM (\(truncatedOCR.count) chars, call #\(dailyAPICallCount) today)...", level: .debug)
 
             if settings.verboseLogging {
-                pipelineLog("[OCR] \(ocrText)", level: .debug)
+                pipelineLog("[OCR] \(truncatedOCR)", level: .debug)
             }
 
             let result = try await provider.extractEvents(
-                from: ocrText,
+                from: truncatedOCR,
                 referenceDate: Date()
             )
 
@@ -121,11 +206,27 @@ final class PipelineCoordinator {
                 pipelineLog("[LLM Response] \(result.rawResponse)", level: .debug)
             }
 
-            for event in result.events {
+            let now = Date()
+            let pastGraceWindow: TimeInterval = -300
+            let maxFutureInterval: TimeInterval = 6 * 30 * 24 * 3600
+
+            for var event in result.events {
                 guard event.confidence >= settings.confidenceThreshold else {
                     pipelineLog("Event below threshold: \(event.title) (\(event.confidence))", level: .debug)
                     continue
                 }
+
+                if event.startDate.timeIntervalSince(now) < pastGraceWindow {
+                    pipelineLog("Past event skipped: \(event.title) (\(event.startDate))", level: .debug)
+                    continue
+                }
+
+                if event.startDate.timeIntervalSince(now) > maxFutureInterval {
+                    pipelineLog("Far-future event skipped: \(event.title) (\(event.startDate))", level: .debug)
+                    continue
+                }
+
+                event = event.sanitized()
 
                 let isDuplicate = await deduplicator.isDuplicate(event)
                 guard !isDuplicate else {
@@ -161,7 +262,9 @@ final class PipelineCoordinator {
             }
 
             lastError = nil
+            consecutiveFailures = 0
         } catch {
+            consecutiveFailures += 1
             pipelineLog("Pipeline error: \(error.localizedDescription)", level: .error)
             lastError = error.localizedDescription
         }

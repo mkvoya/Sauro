@@ -21,7 +21,19 @@ struct RecentDetectionsView: View {
                 ScrollView {
                     LazyVStack(spacing: 4) {
                         ForEach(coordinator.recentDetections) { record in
-                            DetectionRowView(record: record)
+                            DetectionRowView(
+                                record: record,
+                                onUndo: {
+                                    Task {
+                                        await coordinator.undoRecord(withID: record.id)
+                                    }
+                                },
+                                onDismiss: {
+                                    Task {
+                                        await coordinator.dismissRecord(withID: record.id)
+                                    }
+                                }
+                            )
                         }
                     }
                 }

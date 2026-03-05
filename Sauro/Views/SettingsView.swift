@@ -4,6 +4,7 @@ struct SettingsView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(PipelineCoordinator.self) private var coordinator
     @State private var availableCalendars: [String] = []
+    @State private var displays: [DisplayInfo] = []
 
     var body: some View {
         @Bindable var settings = settings
@@ -89,12 +90,46 @@ struct SettingsView: View {
                     .labelsHidden()
                 }
 
+                if displays.count > 1 {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Capture Display")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Picker("Display", selection: $settings.selectedDisplayID) {
+                            Text("Primary").tag(UInt32(0))
+                            ForEach(displays, id: \.displayID) { display in
+                                Text("Display \(display.displayID) (\(display.width)x\(display.height))")
+                                    .tag(display.displayID)
+                            }
+                        }
+                        .labelsHidden()
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Daily API Call Limit: \(settings.dailyAPICallLimit)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Slider(
+                        value: Binding(
+                            get: { Double(settings.dailyAPICallLimit) },
+                            set: { settings.dailyAPICallLimit = Int($0) }
+                        ),
+                        in: 10...1000,
+                        step: 10
+                    )
+                }
+
+                Toggle("Pause When Screen Locked", isOn: $settings.pauseWhenIdle)
+                    .font(.caption)
+
                 Toggle("Verbose Logging", isOn: $settings.verboseLogging)
                     .font(.caption)
             }
         }
         .task {
             availableCalendars = await coordinator.calendarManager.availableCalendarTitles()
+            displays = (try? await coordinator.screenCapture.availableDisplays()) ?? []
         }
     }
 }

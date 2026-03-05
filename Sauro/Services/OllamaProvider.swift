@@ -68,7 +68,17 @@ actor OllamaProvider: LLMProvider {
             throw OllamaError.invalidResponse
         }
 
-        let result = try JSONDecoder().decode(LLMEventExtractionResult.self, from: contentData)
+        let result: LLMEventExtractionResult
+        do {
+            result = try JSONDecoder().decode(LLMEventExtractionResult.self, from: contentData)
+        } catch {
+            if let extracted = Self.extractJSONFromMarkdown(content),
+               let fallbackData = extracted.data(using: .utf8) {
+                result = try JSONDecoder().decode(LLMEventExtractionResult.self, from: fallbackData)
+            } else {
+                throw error
+            }
+        }
         let events = result.events.compactMap { parseExtractedEvent($0) }
 
         let promptSent = "[system] \(systemPrompt)\n\n[user] \(userMessage)"
@@ -91,6 +101,16 @@ actor OllamaProvider: LLMProvider {
             isAllDay: extracted.isAllDay ?? false,
             confidence: extracted.confidence
         )
+    }
+
+    private static func extractJSONFromMarkdown(_ text: String) -> String? {
+        let pattern = "```(?:json)?\\s*\\n([\\s\\S]*?)\\n\\s*```"
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
+              let range = Range(match.range(at: 1), in: text) else {
+            return nil
+        }
+        return String(text[range])
     }
 
     private func parseISO8601Date(_ string: String) -> Date? {

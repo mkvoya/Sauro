@@ -7,7 +7,7 @@ enum DetectionStatus: String, Codable, Sendable {
     case dismissed
 }
 
-struct DetectionRecord: Identifiable, Sendable {
+struct DetectionRecord: Identifiable, Codable, Sendable {
     let id: UUID
     let event: DetectedEvent
     var status: DetectionStatus

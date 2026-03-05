@@ -2,6 +2,8 @@ import SwiftUI
 
 struct DetectionRowView: View {
     let record: DetectionRecord
+    var onUndo: (() -> Void)?
+    var onDismiss: (() -> Void)?
 
     var body: some View {
         HStack {
@@ -17,7 +19,27 @@ struct DetectionRowView: View {
 
             Spacer()
 
-            statusBadge
+            if record.status == .addedToCalendar {
+                Button {
+                    onUndo?()
+                } label: {
+                    Image(systemName: "arrow.uturn.backward")
+                        .font(.caption)
+                }
+                .buttonStyle(.borderless)
+                .help("Undo")
+
+                Button {
+                    onDismiss?()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.caption)
+                }
+                .buttonStyle(.borderless)
+                .help("Dismiss")
+            } else {
+                statusBadge
+            }
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
