@@ -15,12 +15,12 @@ actor MockLLMProvider: LLMProvider {
         errorToThrow = error
     }
 
-    func extractEvents(from ocrText: String, referenceDate: Date) async throws -> [DetectedEvent] {
+    func extractEvents(from ocrText: String, referenceDate: Date) async throws -> LLMProviderResult {
         callCount += 1
         lastOCRText = ocrText
         if let error = errorToThrow {
             throw error
         }
-        return eventsToReturn
+        return LLMProviderResult(events: eventsToReturn, promptSent: "", rawResponse: "")
     }
 }

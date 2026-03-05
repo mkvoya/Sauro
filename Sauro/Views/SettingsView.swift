@@ -15,11 +15,51 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Ollama Model")
+                    Text("LLM Provider")
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    TextField("Model name", text: $settings.ollamaModel)
-                        .textFieldStyle(.roundedBorder)
+                    Picker("Provider", selection: $settings.llmProvider) {
+                        Text("Ollama").tag(LLMProviderChoice.ollama)
+                        Text("OpenAI").tag(LLMProviderChoice.openAI)
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                }
+
+                switch settings.llmProvider {
+                case .ollama:
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Ollama Model")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        TextField("Model name", text: $settings.ollamaModel)
+                            .textFieldStyle(.roundedBorder)
+                    }
+
+                case .openAI:
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Base URL")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        TextField("https://api.openai.com", text: $settings.openAIBaseURL)
+                            .textFieldStyle(.roundedBorder)
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("API Key")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        SecureField("sk-...", text: $settings.openAIAPIKey)
+                            .textFieldStyle(.roundedBorder)
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Model")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        TextField("Model name", text: $settings.openAIModel)
+                            .textFieldStyle(.roundedBorder)
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 6) {
@@ -48,6 +88,9 @@ struct SettingsView: View {
                     }
                     .labelsHidden()
                 }
+
+                Toggle("Verbose Logging", isOn: $settings.verboseLogging)
+                    .font(.caption)
             }
         }
         .task {

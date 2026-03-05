@@ -1,12 +1,14 @@
 import Foundation
 
-actor OllamaProvider: LLMProvider {
+actor OpenAIProvider: LLMProvider {
     private let baseURL: URL
+    private let apiKey: String
     private let model: String
     private let session: URLSession
 
-    init(baseURL: URL = URL(string: "http://localhost:11434")!, model: String = "llama3.2") {
+    init(baseURL: URL, apiKey: String, model: String) {
         self.baseURL = baseURL
+        self.apiKey = apiKey
         self.model = model
         self.session = URLSession.shared
     }
@@ -34,21 +36,21 @@ actor OllamaProvider: LLMProvider {
         let userMessage = "Extract calendar events from the following OCR text:\n\n\(ocrText)"
 
         let messages = [
-            OllamaChatMessage(role: "system", content: systemPrompt),
-            OllamaChatMessage(role: "user", content: userMessage)
+            OpenAIChatMessage(role: "system", content: systemPrompt),
+            OpenAIChatMessage(role: "user", content: userMessage)
         ]
 
-        let request = OllamaChatRequest(
+        let request = OpenAIChatRequest(
             model: model,
             messages: messages,
-            stream: false,
-            format: OllamaFormat.eventExtractionSchema
+            responseFormat: OpenAIResponseFormat.eventExtraction
         )
 
-        let url = baseURL.appendingPathComponent("api/chat")
+        let url = baseURL.appendingPathComponent("v1/chat/completions")
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         urlRequest.timeoutInterval = 120
 
         let encoder = JSONEncoder()
@@ -58,14 +60,14 @@ actor OllamaProvider: LLMProvider {
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
-            throw OllamaError.requestFailed(statusCode: statusCode)
+            throw OpenAIError.requestFailed(statusCode: statusCode)
         }
 
-        let chatResponse = try JSONDecoder().decode(OllamaChatResponse.self, from: data)
-        let content = chatResponse.message.content
+        let chatResponse = try JSONDecoder().decode(OpenAIChatResponse.self, from: data)
 
-        guard let contentData = content.data(using: .utf8) else {
-            throw OllamaError.invalidResponse
+        guard let content = chatResponse.choices.first?.message.content,
+              let contentData = content.data(using: .utf8) else {
+            throw OpenAIError.invalidResponse
         }
 
         let result = try JSONDecoder().decode(LLMEventExtractionResult.self, from: contentData)
@@ -99,12 +101,10 @@ actor OllamaProvider: LLMProvider {
         if let date = formatter.date(from: string) {
             return date
         }
-        // Try without timezone
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let date = formatter.date(from: string) {
             return date
         }
-        // Try basic format without timezone
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
@@ -112,16 +112,16 @@ actor OllamaProvider: LLMProvider {
     }
 }
 
-enum OllamaError: Error, LocalizedError {
+enum OpenAIError: Error, LocalizedError {
     case requestFailed(statusCode: Int)
     case invalidResponse
 
     var errorDescription: String? {
         switch self {
         case .requestFailed(let statusCode):
-            return "Ollama request failed with status code \(statusCode)"
+            return "OpenAI request failed with status code \(statusCode)"
         case .invalidResponse:
-            return "Invalid response from Ollama"
+            return "Invalid response from OpenAI"
         }
     }
 }

@@ -35,6 +35,7 @@ actor OCREngine {
 
             request.recognitionLevel = .accurate
             request.usesLanguageCorrection = true
+            request.recognitionLanguages = ["zh-Hans", "zh-Hant", "en-US"]
 
             let handler = VNImageRequestHandler(cgImage: image, options: [:])
             do {

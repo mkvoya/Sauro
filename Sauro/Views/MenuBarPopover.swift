@@ -3,7 +3,12 @@ import SwiftUI
 struct MenuBarPopover: View {
     @Environment(PipelineCoordinator.self) private var coordinator
     @Environment(AppSettings.self) private var settings
-    @State private var showingSettings = false
+    @State private var activePanel: PopoverPanel = .detections
+
+    private enum PopoverPanel {
+        case detections
+        case settings
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -11,20 +16,35 @@ struct MenuBarPopover: View {
 
             Divider()
 
-            if showingSettings {
-                SettingsView()
-            } else {
+            switch activePanel {
+            case .detections:
                 RecentDetectionsView()
+            case .settings:
+                SettingsView()
             }
 
             Divider()
 
             HStack {
-                Button(showingSettings ? "Back" : "Settings") {
-                    showingSettings.toggle()
+                if activePanel == .detections {
+                    Button("Settings") {
+                        activePanel = .settings
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+
+                    Button("Log") {
+                        LogWindowController.shared.showWindow()
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+                } else {
+                    Button("Back") {
+                        activePanel = .detections
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
 
                 Spacer()
 
@@ -36,6 +56,7 @@ struct MenuBarPopover: View {
             }
         }
         .padding()
-        .frame(width: 320, height: 400)
+        .frame(width: 320)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }

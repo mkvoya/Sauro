@@ -8,10 +8,10 @@ final class PipelineCoordinator {
 
     let screenCapture = ScreenCaptureService()
     let ocrEngine = OCREngine()
-    let ollamaProvider = OllamaProvider()
     let calendarManager = CalendarManager()
     let notificationManager = NotificationManager()
     let deduplicator = EventDeduplicator()
+    let ocrDeduplicator = OCRDeduplicator()
     let settings: AppSettings
 
     var isRunning = false
@@ -36,7 +36,7 @@ final class PipelineCoordinator {
                 try await self.calendarManager.requestAccess()
             } catch {
                 self.lastError = error.localizedDescription
-                Self.logger.error("Calendar access failed: \(error.localizedDescription)")
+                self.pipelineLog("Calendar access failed: \(error.localizedDescription)", level: .error)
             }
 
             while !Task.isCancelled {
@@ -62,9 +62,9 @@ final class PipelineCoordinator {
                 try await calendarManager.deleteEvent(withIdentifier: eventID)
                 recentDetections[index].status = .undone
                 await deduplicator.remove(record.event)
-                Self.logger.info("Undid event: \(record.event.title)")
+                pipelineLog("Undid event: \(record.event.title)", level: .info)
             } catch {
-                Self.logger.error("Failed to undo event: \(error.localizedDescription)")
+                pipelineLog("Failed to undo event: \(error.localizedDescription)", level: .error)
             }
         }
     }
@@ -74,35 +74,62 @@ final class PipelineCoordinator {
         await undoRecord(withID: uuid)
     }
 
+    private func makeLLMProvider() -> any LLMProvider {
+        switch settings.llmProvider {
+        case .ollama:
+            return OllamaProvider(model: settings.ollamaModel)
+        case .openAI:
+            let baseURL = URL(string: settings.openAIBaseURL) ?? URL(string: "https://api.openai.com")!
+            return OpenAIProvider(baseURL: baseURL, apiKey: settings.openAIAPIKey, model: settings.openAIModel)
+        }
+    }
+
     private func runOnce() async {
         do {
-            Self.logger.debug("Capturing screen...")
+            pipelineLog("Capturing screen...", level: .debug)
             let image = try await screenCapture.captureScreen()
 
-            Self.logger.debug("Running OCR...")
+            pipelineLog("Running OCR...", level: .debug)
             let ocrText = try await ocrEngine.recognizeText(from: image)
 
             guard !ocrText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                Self.logger.debug("No text detected from OCR")
+                pipelineLog("No text detected from OCR", level: .debug)
                 return
             }
 
-            Self.logger.debug("Sending to LLM (\(ocrText.count) chars)...")
-            let events = try await ollamaProvider.extractEvents(
+            let isDuplicateOCR = await ocrDeduplicator.isDuplicate(ocrText)
+            await ocrDeduplicator.markSeen(ocrText)
+            guard !isDuplicateOCR else {
+                pipelineLog("OCR text unchanged, skipping LLM call", level: .debug)
+                return
+            }
+
+            let provider = makeLLMProvider()
+            pipelineLog("Sending to LLM (\(ocrText.count) chars)...", level: .debug)
+
+            if settings.verboseLogging {
+                pipelineLog("[OCR] \(ocrText)", level: .debug)
+            }
+
+            let result = try await provider.extractEvents(
                 from: ocrText,
-                referenceDate: Date(),
-                model: settings.ollamaModel
+                referenceDate: Date()
             )
 
-            for event in events {
+            if settings.verboseLogging {
+                pipelineLog("[Prompt] \(result.promptSent)", level: .debug)
+                pipelineLog("[LLM Response] \(result.rawResponse)", level: .debug)
+            }
+
+            for event in result.events {
                 guard event.confidence >= settings.confidenceThreshold else {
-                    Self.logger.debug("Event below threshold: \(event.title) (\(event.confidence))")
+                    pipelineLog("Event below threshold: \(event.title) (\(event.confidence))", level: .debug)
                     continue
                 }
 
                 let isDuplicate = await deduplicator.isDuplicate(event)
                 guard !isDuplicate else {
-                    Self.logger.debug("Duplicate event skipped: \(event.title)")
+                    pipelineLog("Duplicate event skipped: \(event.title)", level: .debug)
                     continue
                 }
 
@@ -124,7 +151,7 @@ final class PipelineCoordinator {
                     recentDetections.removeLast()
                 }
 
-                Self.logger.info("Added event: \(event.title)")
+                pipelineLog("Added event: \(event.title)", level: .info)
 
                 try await notificationManager.postEventAddedNotification(
                     eventTitle: event.title,
@@ -135,8 +162,20 @@ final class PipelineCoordinator {
 
             lastError = nil
         } catch {
-            Self.logger.error("Pipeline error: \(error.localizedDescription)")
+            pipelineLog("Pipeline error: \(error.localizedDescription)", level: .error)
             lastError = error.localizedDescription
         }
+    }
+
+    private func pipelineLog(_ message: String, level: LogLevel) {
+        switch level {
+        case .debug:
+            Self.logger.debug("\(message)")
+        case .info:
+            Self.logger.info("\(message)")
+        case .error:
+            Self.logger.error("\(message)")
+        }
+        AppLogger.shared.log(message, level: level, category: "Pipeline")
     }
 }
