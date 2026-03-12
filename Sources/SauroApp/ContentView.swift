@@ -5,6 +5,7 @@ struct ContentView: View {
     @EnvironmentObject private var coordinator: AppCoordinator
     @EnvironmentObject private var settings: AppSettings
     @Environment(\.openURL) private var openURL
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -16,15 +17,29 @@ struct ContentView: View {
             GroupBox("LLM 配置") {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
+                        Text("Provider")
+                            .frame(width: 90, alignment: .leading)
+                        Picker("Provider", selection: $settings.providerRawValue) {
+                            ForEach(AppSettings.Provider.allCases) { provider in
+                                Text(provider.displayName).tag(provider.rawValue)
+                            }
+                        }
+                        .labelsHidden()
+                        .pickerStyle(.segmented)
+                    }
+
+                    if settings.provider == .openAICompatible {
+                    HStack {
                         Text("API Key")
                             .frame(width: 90, alignment: .leading)
                         SecureField("sk-...", text: $settings.apiKey)
+                    }
                     }
 
                     HStack {
                         Text("Base URL")
                             .frame(width: 90, alignment: .leading)
-                        TextField("https://api.openai.com/v1", text: $settings.baseURL)
+                        TextField(settings.provider == .ollama ? "http://127.0.0.1:11434" : "https://api.openai.com/v1", text: $settings.baseURL)
                     }
 
                     HStack {
@@ -32,6 +47,13 @@ struct ContentView: View {
                             .frame(width: 90, alignment: .leading)
                         TextField("gpt-4.1-mini", text: $settings.model)
                     }
+
+                    Toggle("直接添加到日历", isOn: $settings.directAddToCalendar)
+                        .toggleStyle(.switch)
+
+                    Text(settings.directAddToCalendar ? "当前模式：识别到后自动写入日历（可撤销）" : "当前模式：识别到后先发通知，手动选择“添加”或“忽略”")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
 
                     HStack {
                         Button("保存配置") {
@@ -61,43 +83,21 @@ struct ContentView: View {
 
                 Text(coordinator.isRunning ? "状态: 运行中" : "状态: 未运行")
                     .font(.headline)
+
+                Button("清空 OCR 去重缓存") {
+                    coordinator.clearOCRDedupCache()
+                }
+                .buttonStyle(.bordered)
+
+                Button("打开日志页面") {
+                    openWindow(id: "terminal-log")
+                }
+                .buttonStyle(.bordered)
             }
 
             Divider()
 
-            HStack(alignment: .top, spacing: 12) {
-                GroupBox("OCR 文本（最近一次）") {
-                    ScrollView {
-                        Text(coordinator.latestOCRText.isEmpty ? "暂无数据" : coordinator.latestOCRText)
-                            .font(.system(.body, design: .monospaced))
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(minHeight: 130)
-                }
-
-                GroupBox("发给大模型的请求（最近一次）") {
-                    ScrollView {
-                        Text(coordinator.latestLLMRequest.isEmpty ? "暂无数据" : coordinator.latestLLMRequest)
-                            .font(.system(.body, design: .monospaced))
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(minHeight: 130)
-                }
-
-                GroupBox("大模型回复（最近一次）") {
-                    ScrollView {
-                        Text(coordinator.latestLLMResponse.isEmpty ? "暂无数据" : coordinator.latestLLMResponse)
-                            .font(.system(.body, design: .monospaced))
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(minHeight: 130)
-                }
-            }
-
-            Text("运行日志")
+            Text("最近运行日志")
                 .font(.headline)
 
             List(coordinator.logs) { log in
@@ -128,5 +128,35 @@ struct ContentView: View {
                 dismissButton: .default(Text("知道了"))
             )
         }
+    }
+}
+
+struct TerminalLogView: View {
+    @EnvironmentObject private var coordinator: AppCoordinator
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("实时日志（Terminal）")
+                    .font(.title3.bold())
+                Spacer()
+                Button("清空日志") {
+                    coordinator.clearTerminalLogs()
+                }
+                .buttonStyle(.bordered)
+            }
+
+            ScrollView {
+                Text(coordinator.terminalLogText.isEmpty ? "暂无日志输出。" : coordinator.terminalLogText)
+                    .font(.system(size: 12, weight: .regular, design: .monospaced))
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .padding(12)
+            }
+            .background(Color.black.opacity(0.92))
+            .foregroundStyle(Color.green)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .padding(16)
     }
 }

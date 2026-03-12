@@ -24,5 +24,10 @@ struct SauroApp: App {
                     coordinator.initialize()
                 }
         }
+        Window("实时日志", id: "terminal-log") {
+            TerminalLogView()
+                .environmentObject(coordinator)
+                .frame(minWidth: 900, minHeight: 600)
+        }
     }
 }
